@@ -1,10 +1,10 @@
 package br.com.fiap.fin_money_api.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,12 +15,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
-// import org.springframework.web.bind.annotation.RequestMapping;
-// import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import br.com.fiap.fin_money_api.model.Category;
+import br.com.fiap.fin_money_api.repository.CategoryRepository;
 
 @RestController
 @RequestMapping("/categories") // como todos os métodos usavam o mesmo caminho
@@ -28,7 +27,10 @@ public class CategoryController {
 
     private Logger log = LoggerFactory.getLogger(getClass()); // objeto para log no terminal
 
-    private List<Category> repository = new ArrayList<>(); // banco de dados em memória
+    // private List<Category> repository = new ArrayList<>(); // banco de dados em memória
+    
+    @Autowired // Injeção de Dependência
+    private CategoryRepository repository;
 
     // @RequestMapping(produces = "application/json", path = "/categories", method =
     // {RequestMethod.GET})
@@ -36,14 +38,14 @@ public class CategoryController {
 
     @GetMapping() // mapeia requisições do tipo GET, path é um atributo padrão, por isso omitimos
     public List<Category> index() {
-        return repository;
+        return repository.findAll();
     }
 
     @PostMapping()
     @ResponseStatus(code = HttpStatus.CREATED) // se o método foi criado com sucesso, a mensagem será "created"
     public Category create(@RequestBody Category category) { // mostrando que a categoria estará no corpo da requisição
         log.info("Cadastrando categoria " + category.getName());
-        repository.add(category);
+        repository.save(category); // inserindo uma categoria no bd ||  add -> save
         return category;
     }
 
@@ -70,7 +72,7 @@ public class CategoryController {
     @DeleteMapping("{id}")
     public ResponseEntity<Object> destroy(@PathVariable Long id) {
         log.info("Apagando categoria " + id);
-        repository.remove(getCategory(id)); // usando direto porque não precisa de uma variável que só vai usar 1 vez
+        repository.delete(getCategory(id)); // usando direto porque não precisa de uma variável que só vai usar 1 vez
         return ResponseEntity.noContent().build(); // o retorno de sucesso é 204
     }
 
@@ -79,17 +81,23 @@ public class CategoryController {
     public ResponseEntity<Object> update(@PathVariable Long id, @RequestBody Category category) {
         log.info("Atualizando categoria + " + id + " " + category);
 
-        repository.remove(getCategory(id)); // tirando os dados antigos
-        category.setId(id); // evitando que o id seja atualizado
-        repository.add(category); // adicionando os novos dados
+        // repository.remove(getCategory(id)); // tirando os dados antigos
+        getCategory(id); // evitando que o id seja atualizado
+        category.setId(id); // setando o id
+        repository.save(category); // adicionando os novos dados
         return ResponseEntity.ok(category);
     }
 
     private Category getCategory(Long id) {
-        // stream - fluxo de dados, pega uma coleção e retorna um fluxo que pode ser
-        // consumido por uma outra função
+        return repository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria não encontrada"));
+        
+        /*
+                / stream - fluxo de dados, pega uma coleção e retorna um fluxo que pode ser
+        / consumido por uma outra função
         return repository.stream().filter(c -> c.getId().equals(id)).findFirst().orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria não encontrada"));
-        // pega o primeiro ou, senão, lança uma exceção
+        / pega o primeiro ou, senão, lança uma exceção
+         */
     }
 }
