@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,9 +21,11 @@ import org.springframework.web.server.ResponseStatusException;
 
 import br.com.fiap.fin_money_api.model.Category;
 import br.com.fiap.fin_money_api.repository.CategoryRepository;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/categories") // como todos os métodos usavam o mesmo caminho
+@CrossOrigin(origins = "http://localhost:3000")
 public class CategoryController {
 
     private Logger log = LoggerFactory.getLogger(getClass()); // objeto para log no terminal
@@ -43,10 +46,9 @@ public class CategoryController {
 
     @PostMapping()
     @ResponseStatus(code = HttpStatus.CREATED) // se o método foi criado com sucesso, a mensagem será "created"
-    public Category create(@RequestBody Category category) { // mostrando que a categoria estará no corpo da requisição
+    public Category create(@RequestBody @Valid Category category) { // mostrando que a categoria estará no corpo da requisição
         log.info("Cadastrando categoria " + category.getName());
-        repository.save(category); // inserindo uma categoria no bd ||  add -> save
-        return category;
+        return repository.save(category); // inserindo uma categoria no bd ||  add -> save
     }
 
     @GetMapping("{id}")
@@ -78,7 +80,7 @@ public class CategoryController {
 
     // Editar
     @PutMapping("{id}")
-    public ResponseEntity<Object> update(@PathVariable Long id, @RequestBody Category category) {
+    public ResponseEntity<Object> update(@PathVariable Long id, @RequestBody @Valid Category category) {
         log.info("Atualizando categoria + " + id + " " + category);
 
         // repository.remove(getCategory(id)); // tirando os dados antigos
