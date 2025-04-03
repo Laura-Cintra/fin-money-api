@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class ValidationHandler {
-    
-    record ValidationError (String field, String message) {}
+
+    record ValidationError (String field, String message){}
 
     @ExceptionHandler(exception = MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -20,4 +20,5 @@ public class ValidationHandler {
                 .map(error -> new ValidationError(error.getField(), error.getDefaultMessage()))
                 .toList();
     }
+
 }
