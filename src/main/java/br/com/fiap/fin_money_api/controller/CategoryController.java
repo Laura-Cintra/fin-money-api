@@ -5,6 +5,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -21,6 +23,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import br.com.fiap.fin_money_api.model.Category;
 import br.com.fiap.fin_money_api.repository.CategoryRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 
 @RestController
@@ -39,12 +43,16 @@ public class CategoryController {
     // {RequestMethod.GET})
     // mapeia requisições para este método
 
-    @GetMapping() // mapeia requisições do tipo GET, path é um atributo padrão, por isso omitimos
+    @GetMapping // mapeia requisições do tipo GET, path é um atributo padrão, por isso omitimos
+    @Operation(summary = "Listar categorias", description = "Retorna um array com todas as categorias")
+    @Cacheable("categories")
     public List<Category> index() {
         return repository.findAll();
     }
 
-    @PostMapping()
+    @PostMapping
+    @CacheEvict(value = "categories", allEntries = true)
+    @Operation(responses = @ApiResponse(responseCode = "400", description = "Validação falhou"))
     @ResponseStatus(code = HttpStatus.CREATED) // se o método foi criado com sucesso, a mensagem será "created"
     public Category create(@RequestBody @Valid Category category) { // mostrando que a categoria estará no corpo da requisição
         log.info("Cadastrando categoria " + category.getName());
