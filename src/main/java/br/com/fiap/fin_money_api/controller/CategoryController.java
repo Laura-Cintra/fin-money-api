@@ -26,13 +26,15 @@ import br.com.fiap.fin_money_api.repository.CategoryRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/categories") // como todos os métodos usavam o mesmo caminho
 @CrossOrigin(origins = "http://localhost:3000")
+@Slf4j
 public class CategoryController {
 
-    private Logger log = LoggerFactory.getLogger(getClass()); // objeto para log no terminal
+    // private Logger log = LoggerFactory.getLogger(getClass()); // objeto para log no terminal --> @Slf4j
 
     // private List<Category> repository = new ArrayList<>(); // banco de dados em memória
     
