@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
  
 import br.com.fiap.fin_money_api.model.Transaction;
 import br.com.fiap.fin_money_api.repository.TransactionRepository;
-import br.com.specification.TransactionSpecification;
+import br.com.fiap.fin_money_api.specification.TransactionSpecification;
 import lombok.extern.slf4j.Slf4j;
  
 @RestController

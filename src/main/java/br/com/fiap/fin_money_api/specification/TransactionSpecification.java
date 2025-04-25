@@ -1,4 +1,4 @@
-package br.com.specification;
+package br.com.fiap.fin_money_api.specification;
 
 import java.util.ArrayList;
 
