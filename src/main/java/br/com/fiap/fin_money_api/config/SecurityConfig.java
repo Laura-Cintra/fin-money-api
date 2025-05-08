@@ -20,32 +20,34 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         return http.authorizeHttpRequests(
             auth -> auth
-                .requestMatchers("/categories/**").hasRole("ADMIN")
+                //.requestMatchers("/categories/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
         )
         .httpBasic(Customizer.withDefaults())
         .build();
     }
 
-    @Bean
-    UserDetailsService userDetailsService(){
+    // Encontrando usuário no armazenamento local
+    // @Bean
+    // UserDetailsService userDetailsService(){
         
-        var users = List.of(
-            User
-                .withUsername("laura")
-                .password("$2a$12$rAAfVcGyEr6urvnNby1ke.Z917LH7iBzoSqtdD5ruC.TPdNiMoLPa")
-                .roles("ADMIN")
-                .build(),
-            User
-                .withUsername("maria")
-                .password("$2a$12$rCk9GJa9xEc3XNRaJwNLZ.ikrQU7he9hxNHTJmiYh9ij58PXuclW2")
-                .roles("USER")
-                .build()
-        );
+    //     var users = List.of(
+    //         User
+    //             .withUsername("laura")
+    //             .password("$2a$12$rAAfVcGyEr6urvnNby1ke.Z917LH7iBzoSqtdD5ruC.TPdNiMoLPa")
+    //             .roles("ADMIN")
+    //             .build(),
+    //         User
+    //             .withUsername("maria")
+    //             .password("$2a$12$rCk9GJa9xEc3XNRaJwNLZ.ikrQU7he9hxNHTJmiYh9ij58PXuclW2")
+    //             .roles("USER")
+    //             .build()
+    //     );
 
-        return new InMemoryUserDetailsManager(users); // usuário está em memória e não no BD
-    }
-
+    //     return new InMemoryUserDetailsManager(users); // usuário está em memória e não no BD
+    // }
+    
+    // sempre que eu pedir "passwordEncoder" usará o BCrypt
     @Bean
     PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder(); // gera a senha criptografada
